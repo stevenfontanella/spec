@@ -626,6 +626,7 @@
   (table $t1 funcref (elem $f $g))
   (table $t2 funcref (elem $h $i $j))
   (table $t3 4 funcref)
+  (table $only-null (ref null nofunc) (elem (ref.null nofunc)))
   (elem (table $t3) (i32.const 0) func $g $h)
   (elem (table $t3) (i32.const 3) func $z)
 
@@ -645,6 +646,9 @@
   (func (export "call-3") (param i32 i32 i32) (result i32)
     (call_indirect $t3 (type $ii-i) (local.get 0) (local.get 1) (local.get 2))
   )
+  (func (export "call-only-null") (param i32 i32 i32) (result i32)
+    (call_indirect $only-null (type $ii-i) (local.get 0) (local.get 1) (local.get 2))
+  )
 )
 
 (assert_return (invoke "call-1" (i32.const 2) (i32.const 3) (i32.const 0)) (i32.const 5))
@@ -661,6 +665,8 @@
 (assert_trap (invoke "call-3" (i32.const 2) (i32.const 3) (i32.const 2)) "uninitialized element")
 (assert_trap (invoke "call-3" (i32.const 2) (i32.const 3) (i32.const 3)) "indirect call type mismatch")
 (assert_trap (invoke "call-3" (i32.const 2) (i32.const 3) (i32.const 4)) "undefined element")
+
+(assert_trap (invoke "call-only-null" (i32.const 2) (i32.const 3) (i32.const 0)) "uninitialized element")
 
 
 ;; Invalid syntax
